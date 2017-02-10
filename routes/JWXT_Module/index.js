@@ -20,32 +20,38 @@ class JWXT{
         this.j = request.jar();
     }
     //修改用户密码
-    modifyPassword(userId,newPassword,callback) {
-        let successFunction = function () {
-            let option = {
-                url: baseUrl+'modifyPassWordAction.do',
-                headers: headers,
-                form:{
-                    yhlbdm: '01',
-                    zjh: userId,
-                    oldPass: '123456',
-                    newPass1: newPassword,
-                    newPass2: newPassword
-                }
-            };
-
-            request.post(option, (error, response, body)=>{
-                if (!error && response.statusCode == 200) {
-                    console.log('modify password successful!!!');
-                    email('【S-killer】密码修改成功！',
-                        `<h2>密码修改成功!!!</h2><p>用户 ${userId} 密码修改成功!!!，新密码：${newPassword}</p>`);
-                    callback();
-                }else{
-                    console.log(error);
-                }
-            });
+    modifyPassword(userId,newPassword) {
+        let option = {
+            url: baseUrl+'modifyPassWordAction.do',
+            headers: headers,
+            jar: this.j,
+            form:{
+                yhlbdm: '01',
+                zjh: userId,
+                oldPass: '123456',
+                newPass1: newPassword,
+                newPass2: newPassword
+            }
         };
-        this.login('0141122427','121021',successFunction);
+
+        return new Promise((resolve, reject)=>{
+            this.login('0141122427','121021').then(()=>{
+                request.post(option, (error, response, body)=>{
+                    if (!error && response.statusCode == 200) {
+                        console.log('modify password successful!!!');
+                        email('【S-killer】密码修改成功！',
+                            `<h2>密码修改成功!!!</h2><p>用户 ${userId} 密码修改成功!!!，新密码：${newPassword}</p>`);
+                        resolve();
+                    }else if(!error && response.statusCode == 500){
+                        reject('Login Error！');
+                    }else{
+                        reject(error);
+                    }
+                });
+            },(error)=>{
+                reject(error);
+            });
+        });
     };
 
     login(userId, password) {
@@ -78,7 +84,7 @@ class JWXT{
             headers: headers,
         };
         return new Promise((resolve, reject)=>{
-            this.login(userId,password).then((data)=>{
+            this.login(userId,password).then(()=>{
                 request(option, (error, response, body)=>{
                     if (!error && response.statusCode == 200) {
                         let buf =  iconv.decode(body, 'gb2312');

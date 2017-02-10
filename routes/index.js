@@ -5,7 +5,6 @@ let session = require('express-session');
 let Users = require('../models/Users');
 let Examination = require('../models/Examination');
 
-let email_Module = require('./Email_Module/index');
 let JWXT = require('./JWXT_Module/index');
 
 let haveLogined = function (user) {
@@ -116,7 +115,7 @@ router.post('/fixPassword', (req, res)=>{
 
 router.get('/getExamination', (req, res )=>{
     if(haveLogined(req.session.user)){
-        JWXT.checkNewExamination('0141122427','121021');
+        new JWXT().checkNewExamination('0141122427','121021');
         res.render('success',{'message':'Examination updated successfully！'});
     }else{
         res.redirect('/login');
@@ -125,8 +124,10 @@ router.get('/getExamination', (req, res )=>{
 
 router.post('/JWXT/fixPassword', (req, res)=>{
     if(haveLogined(req.session.user)){
-        JWXT.modifyPassword(req.body.username,req.body.password,()=>{
+        new JWXT().modifyPassword(req.body.username,req.body.password).then(()=>{
             res.render('success',{'message':`User ${req.body.username} Modify Password successfully！`});
+        },(error)=>{
+            res.render('error',{'error':error});
         });
     }else{
         res.redirect('/login');
