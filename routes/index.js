@@ -13,14 +13,13 @@ let haveLogined = function (user) {
             console.log(err);
         }else{
             if(!date){
-                let user = new Users({
+                new Users({
                     username: 'killer',
                     password: '121021',
                     jwxtId: '',
                     jwxtPw: '',
                     email: '',
-                });
-                user.save((err)=>{
+                }).save((err)=>{
                     if(err){
                         console.log(err);
                     }else{
@@ -122,6 +121,22 @@ router.get('/getExamination', (req, res )=>{
     }
 });
 
+router.get('/home', function(req, res) {
+    if(haveLogined(req.session.user)){
+        res.render('home');
+    }else{
+        res.redirect('/login');
+    }
+});
+
+router.get('/JWXT/serviceManagement', (req, res)=>{
+    if(haveLogined(req.session.user)){
+        res.render('JWXT/serviceManagement');
+    }else{
+        res.redirect('/login');
+    }
+});
+
 router.post('/JWXT/fixPassword', (req, res)=>{
     if(haveLogined(req.session.user)){
         new JWXT().modifyPassword(req.body.username,req.body.password).then(()=>{
@@ -141,5 +156,7 @@ router.get('/JWXT/fixPassword', (req, res)=>{
         res.redirect('/login');
     }
 });
+
+
 
 module.exports = router;

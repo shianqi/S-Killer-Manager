@@ -9,7 +9,7 @@ let iconv = require('iconv-lite');
 let email = require('../Email_Module/index');
 let Examination = require('../../models/Examination');
 
-let baseUrl = 'http://jwxt.imu.edu.cn:8081/';
+let baseUrl = 'http://jwxt.imu.edu.cn/';
 let headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko'
     };
@@ -54,6 +54,7 @@ class JWXT{
         });
     };
 
+    //登陆
     login(userId, password) {
         let option = {
             url: baseUrl+'loginAction.do',
@@ -70,12 +71,14 @@ class JWXT{
                 if (!error && response.statusCode == 200) {
                     resolve();
                 }else{
+                    console.log('login error!');
                     reject(error);
                 }
             });
         });
     };
 
+    //获取成绩
     getExamination(userId, password) {
         let option = {
             url: baseUrl+'gradeLnAllAction.do?type=ln&oper=sxinfo',
@@ -111,6 +114,7 @@ class JWXT{
         });
     };
 
+    //打印成绩
     printExamination(userId, password){
         return new Promise((resolve, reject)=>{
             this.getExamination(userId, password).then((list)=>{
@@ -136,6 +140,7 @@ class JWXT{
         });
     }
 
+    //检查是否有新成绩
     checkNewExamination(userId, password, emailAddress){
         let examinationListToEmail = function (list) {
             let str = `
@@ -169,11 +174,10 @@ class JWXT{
                             return a.kch-b.kch;
                         });
                         if(date==null){
-                            let examination = new Examination({
+                            new Examination({
                                 examination : list,
                                 userId : userId
-                            });
-                            examination.save(()=>{
+                            }).save(()=>{
                                 console.log(`本地数据为空，保存${list.length}条数据成功！`);
                                 resolve();
                             });
@@ -182,7 +186,7 @@ class JWXT{
                             list.forEach((listItem)=>{
                                 let flag = true;
                                 date.examination.forEach((dateItem)=>{
-                                    if(dateItem.kch==listItem.kch&&dateItem.score==listItem.score){
+                                    if(dateItem.kch===listItem.kch&&dateItem.score===listItem.score){
                                         flag = false;
                                     }
                                 });
@@ -194,9 +198,7 @@ class JWXT{
                                 console.log(`用户${userId}有${temp.length}门新成绩`);
                                 email('【S-killer】您有新的成绩！',examinationListToEmail(temp),emailAddress);
                                 date.examination = list;
-                                date.save(()=>{
-                                    resolve();
-                                });
+                                date.save(()=>{ resolve(); });
                             }else {
                                 console.log(`没有新成绩！`);
                             }
