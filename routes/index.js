@@ -1,50 +1,14 @@
 let express = require('express');
 let router = express.Router();
-let session = require('express-session');
 
 let Users = require('../models/Users');
 let Examination = require('../models/Examination');
-
-let JWXT = require('./JWXT_Module/index');
-
-let haveLogined = function (user) {
-    Users.getSize((err, date)=>{
-        if(err){
-            console.log(err);
-        }else{
-            if(!date){
-                new Users({
-                    username: 'killer',
-                    password: '121021',
-                    jwxtId: '',
-                    jwxtPw: '',
-                    email: '',
-                }).save((err)=>{
-                    if(err){
-                        console.log(err);
-                    }else{
-                        console.log(`add user ${user.username} success!`);
-                    }
-                });
-            }
-        }
-    });
-    return(typeof(user) != "undefined");
-};
-
-router.use(session({
-    secret: 'secret',
-    resave: true,
-    saveUninitialized: false,
-    cookie:{
-        maxAge: 1000*60*100 //cookie有效时间10min
-    }
-}));
+let JWXT = require('./JWXT_Module/service');
+let haveLogined = require('./users').haveLogined;
 
 router.get('/', function(req, res) {
     if(haveLogined(req.session.user)){
         res.render('index',{username:req.session.user.username});
-        console.log(req.session.user);
     }else{
         res.redirect('/login');
     }
@@ -128,35 +92,5 @@ router.get('/home', function(req, res) {
         res.redirect('/login');
     }
 });
-
-router.get('/JWXT/serviceManagement', (req, res)=>{
-    if(haveLogined(req.session.user)){
-        res.render('JWXT/serviceManagement');
-    }else{
-        res.redirect('/login');
-    }
-});
-
-router.post('/JWXT/fixPassword', (req, res)=>{
-    if(haveLogined(req.session.user)){
-        new JWXT().modifyPassword(req.body.username,req.body.password).then(()=>{
-            res.render('success',{'message':`User ${req.body.username} Modify Password successfully！`});
-        },(error)=>{
-            res.render('error',{'error':error});
-        });
-    }else{
-        res.redirect('/login');
-    }
-});
-
-router.get('/JWXT/fixPassword', (req, res)=>{
-    if(haveLogined(req.session.user)){
-        res.render('JWXT/fixPassword');
-    }else{
-        res.redirect('/login');
-    }
-});
-
-
 
 module.exports = router;

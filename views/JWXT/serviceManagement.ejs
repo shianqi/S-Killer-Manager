@@ -7,12 +7,18 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
     <link rel="stylesheet" href="//bootswatch.com/journal/bootstrap.min.css">
+    <script src="../javascript/vue.min.js"></script>
 </head>
 <body>
-<div class="panel-body">
-
+<div id="main" class="panel-body">
+    <!-- Standard button -->
+    <button type="button" class="btn"
+            v-bind="{'disabled': state==1}"
+            v-bind:class="{'btn-default': state==1,'btn-success': state==2,'btn-primary': state==3}"
+            v-on:click="reverseMessage">{{getText()}}</button>
 </div>
 </body>
 <script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
 <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="../javascript/jwxt/serviceManagement.js"></script>
 </html>
