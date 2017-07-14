@@ -1,12 +1,12 @@
-let express = require('express');
-let router = express.Router();
+let express = require('express')
+let router = express.Router()
 
-let Users = require('../models/Users');
+let Users = require('../models/Users')
 
 let haveLogined = function (user) {
     Users.getSize((err, date)=>{
         if(err){
-            console.log(err);
+            console.log(err)
         }else{
             if(!date){
                 new Users({
@@ -17,16 +17,16 @@ let haveLogined = function (user) {
                     email: '',
                 }).save((err)=>{
                     if(err){
-                        console.log(err);
+                        console.log(err)
                     }else{
-                        console.log(`add user ${user.username} success!`);
+                        console.log('add user success!')
                     }
-                });
+                })
             }
         }
-    });
-    return(typeof(user) != "undefined");
-};
+    })
+    return(typeof(user) != 'undefined')
+}
 
-module.exports = router;
-module.exports.haveLogined = haveLogined;
+module.exports = router
+module.exports.haveLogined = haveLogined

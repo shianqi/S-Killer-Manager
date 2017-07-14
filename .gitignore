@@ -2,3 +2,4 @@
 .idea/
 S-Killer-Manager.iml
 node_modules/
+npm-debug.log

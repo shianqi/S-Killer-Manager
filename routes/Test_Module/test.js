@@ -6,11 +6,11 @@ class Test{
         this.user = 'def'
     }
     setUser(user){
-        this.user = user;
-    };
+        this.user = user
+    }
     getUser(){
-        return this.user;
+        return this.user
     }
 }
 
-module.exports = Test;
+module.exports = Test
