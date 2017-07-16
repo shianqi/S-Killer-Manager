@@ -1,4 +1,4 @@
-let request = require('request')
+const request = require('request')
 
 const host = 'http://202.207.7.180:8081/ClientWeb/pro/ajax/'
 const headers = {
@@ -6,11 +6,11 @@ const headers = {
 }
 
 function getMessage() {
-    let option = {
-        url: host+'device.aspx',
-        headers: headers,
+    const option = {
+        url: `${host}device.aspx`,
+        headers,
         jar: this.j,
-        form:{
+        form: {
             right: 'detail',
             fr_all_day: 'false',
             room_id: '100485887',

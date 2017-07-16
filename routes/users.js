@@ -1,22 +1,22 @@
-let express = require('express')
-let router = express.Router()
+const express = require('express')
+const router = express.Router()
 
-let Users = require('../models/Users')
+const Users = require('../models/Users')
 
-let haveLogined = function (user) {
+const haveLogined = function(user) {
     Users.getSize((err, date)=>{
-        if(err){
+        if(err) {
             console.log(err)
         }else{
-            if(!date){
+            if(!date) {
                 new Users({
                     username: 'killer',
                     password: '121021',
                     jwxtId: '',
                     jwxtPw: '',
-                    email: '',
+                    email: ''
                 }).save((err)=>{
-                    if(err){
+                    if(err) {
                         console.log(err)
                     }else{
                         console.log('add user success!')

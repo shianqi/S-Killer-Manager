@@ -1,27 +1,27 @@
 /**
  * Created by killer on 2017/2/7.
  */
-let mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-let ExaminationSchemas = new mongoose.Schema({
+const ExaminationSchemas = new mongoose.Schema({
     userId: String,
-    examination:[],
+    examination:[]
 })
 
 ExaminationSchemas.statics = {
-    getSize: function(cb){
+    getSize(cb) {
         return this
             .count()
             .exec(cb)
     },
-    findById: function(id, cb){
+    findById(id, cb) {
         return this
             .findOne({_id:id})
             .exec(cb)
     },
-    findByUsername: function (userId, cb) {
+    findByUsername(userId, cb) {
         return this
-            .findOne({userId:userId})
+            .findOne({userId})
             .exec(cb)
     }
 }

@@ -2,27 +2,27 @@
  * imu教务系统服务模块
  * Created by killer on 2017/2/5.
  */
-let request = require('request')
-let cheerio = require('cheerio')
-let iconv = require('iconv-lite') //用于解决GBK乱码
+const request = require('request')
+const cheerio = require('cheerio')
+const iconv = require('iconv-lite') //用于解决GBK乱码
 
-let email = require('../Email_Module/index')
-let Examination = require('../../models/Examination')
+const email = require('../Email_Module/index')
+const Examination = require('../../models/Examination')
 
-let baseUrl = 'http://jwxt.imu.edu.cn/'
-let headers = {
+const baseUrl = 'http://jwxt.imu.edu.cn/'
+const headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; Touch; rv:11.0) like Gecko'
 }
 
-class JWXT{
-    constructor(){
+class JWXT {
+    constructor() {
         this.j = request.jar()
     }
     //修改用户密码
     modifyPassword(userId,newPassword) {
-        let option = {
-            url: baseUrl+'modifyPassWordAction.do',
-            headers: headers,
+        const option = {
+            url: `${baseUrl}modifyPassWordAction.do`,
+            headers,
             jar: this.j,
             form:{
                 yhlbdm: '01',
@@ -41,7 +41,7 @@ class JWXT{
                         email('【S-killer】密码修改成功！',
                             `<h2>密码修改成功!!!</h2><p>用户 ${userId} 密码修改成功!!!，新密码：${newPassword}</p>`)
                         resolve()
-                    }else if(!error && response.statusCode == 500){
+                    }else if(!error && response.statusCode == 500) {
                         reject('Login Error！')
                     }else{
                         reject(error)
@@ -55,9 +55,9 @@ class JWXT{
 
     //登陆
     login(userId, password) {
-        let option = {
-            url: baseUrl+'loginAction.do',
-            headers: headers,
+        const option = {
+            url: `${baseUrl}loginAction.do`,
+            headers,
             jar: this.j,
             form:{
                 zjh: userId,
@@ -79,13 +79,13 @@ class JWXT{
     }
 
     //注销
-    logout(){
-        let option = {
-            url: baseUrl+'logout.do',
-            headers: headers,
+    logout() {
+        const option = {
+            url: `${baseUrl}logout.do`,
+            headers,
             jar: this.j,
             form:{
-                loginType:'platformLogin',
+                loginType:'platformLogin'
             }
         }
         return new Promise((resolve, reject)=>{
@@ -102,23 +102,23 @@ class JWXT{
 
     //获取成绩
     getExamination(userId, password) {
-        let option = {
-            url: baseUrl+'gradeLnAllAction.do?type=ln&oper=sxinfo',
+        const option = {
+            url: `${baseUrl}gradeLnAllAction.do?type=ln&oper=sxinfo`,
             encoding: null,
             jar: this.j,
-            headers: headers,
+            headers
         }
         return new Promise((resolve, reject)=>{
             this.login(userId,password).then(()=>{
                 request(option, (error, response, body)=>{
                     if (!error && response.statusCode == 200) {
-                        let buf = iconv.decode(body, 'gb2312')
-                        let $ = cheerio.load(buf)
-                        let list = []
+                        const buf = iconv.decode(body, 'gb2312')
+                        const $ = cheerio.load(buf)
+                        const list = []
 
                         $('.odd').each( (index, tr)=> {
-                            let item = {}
-                            let arr = []
+                            const item = {}
+                            const arr = []
                             $(tr).find('td').each((index, td)=>{
                                 arr[index] = $(td).text().replace(/[\r\n\s]/g, '')
                             });
@@ -137,7 +137,7 @@ class JWXT{
     }
 
     //打印成绩
-    printExamination(userId, password){
+    printExamination(userId, password) {
         return new Promise((resolve, reject)=>{
             this.getExamination(userId, password).then((list)=>{
                 let itemStr = `
@@ -163,8 +163,8 @@ class JWXT{
     }
 
     //检查是否有新成绩
-    checkNewExamination(userId, password, emailAddress){
-        let examinationListToEmail = function (list) {
+    checkNewExamination(userId, password, emailAddress) {
+        const examinationListToEmail = function(list) {
             let str = `
                 <h2>用户：${userId} 有新成绩，时间：${new Date().toLocaleDateString()}</h2>
                 <table border="1" cellspacing="1">
@@ -182,41 +182,41 @@ class JWXT{
             return str
         }
 
-        console.log('开始查询'+userId+'的分数')
+        console.log(`开始查询${userId}的分数`)
 
         return new Promise((resolve, reject)=>{
             this.getExamination(userId,password).then((list)=>{
                 console.log(`用户${userId}分数查询成功，共${list.length}条`)
                 Examination.findByUsername(userId, (err,date)=>{
-                    if(err){
+                    if(err) {
                         console.log(`查询本地成绩失败，原因：${err}`)
                         reject(err)
                     }else{
                         list.sort((a,b)=>{
                             return a.kch-b.kch
                         })
-                        if(date==null){
+                        if(date==null) {
                             new Examination({
                                 examination : list,
-                                userId : userId
+                                userId
                             }).save(()=>{
                                 console.log(`本地数据为空，保存${list.length}条数据成功！`)
                                 resolve()
                             })
                         }else{
-                            let temp = []
+                            const temp = []
                             list.forEach((listItem)=>{
                                 let flag = true
                                 date.examination.forEach((dateItem)=>{
-                                    if(dateItem.kch===listItem.kch&&dateItem.score===listItem.score){
+                                    if(dateItem.kch===listItem.kch&&dateItem.score===listItem.score) {
                                         flag = false
                                     }
                                 })
-                                if(flag){
+                                if(flag) {
                                     temp.push(listItem)
                                 }
                             })
-                            if(temp.length!=0){
+                            if(temp.length!=0) {
                                 console.log(`用户${userId}有${temp.length}门新成绩`)
                                 email('【S-killer】您有新的成绩！',examinationListToEmail(temp),emailAddress)
                                 date.examination = list

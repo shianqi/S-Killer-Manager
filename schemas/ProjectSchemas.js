@@ -1,15 +1,15 @@
 /**
  * Created by killer on 2017/2/12.
  */
-let mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-let MongooseSchemas = new mongoose.Schema({
+const MongooseSchemas = new mongoose.Schema({
     address: String,
-    describe: String,
+    describe: String
 })
 
 MongooseSchemas.statics = {
-    getSize: function (cb) {
+    getSize(cb) {
         return this
             .count()
             .exec(cb)

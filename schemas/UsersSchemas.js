@@ -1,30 +1,30 @@
 /**
  * Created by killer on 2017/2/7.
  */
-let mongoose = require('mongoose')
+const mongoose = require('mongoose')
 
-let UserSchemas = new mongoose.Schema({
+const UserSchemas = new mongoose.Schema({
     username: String,
     password: String,
     jwxtId: String,
     jwxtPw: String,
-    email: String,
+    email: String
 })
 
 UserSchemas.statics = {
-    getSize: function(cb){
+    getSize(cb) {
         return this
             .count()
             .exec(cb)
     },
-    findById: function(id, cb){
+    findById(id, cb) {
         return this
             .findOne({_id:id})
             .exec(cb)
     },
-    findByUsername: function (username, cb) {
+    findByUsername(username, cb) {
         return this
-            .findOne({username:username})
+            .findOne({username})
             .exec(cb)
     }
 }

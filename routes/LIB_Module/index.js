@@ -1,6 +1,6 @@
-let express = require('express')
-let router = express.Router()
-let getMessage = require('./service.js')
+const express = require('express')
+const router = express.Router()
+const getMessage = require('./service.js')
 
 router.get('/getMessage', (req, res, next)=>{
     getMessage().then((date)=>{

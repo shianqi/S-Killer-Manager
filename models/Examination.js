@@ -1,9 +1,9 @@
 /**
  * Created by killer on 2017/2/7.
  */
-let mongoose = require('mongoose');
-let ExaminationSchemas = require('../schemas/ExaminationSchemas');
+const mongoose = require('mongoose')
+const ExaminationSchemas = require('../schemas/ExaminationSchemas')
 
-let Examination = mongoose.model('ExaminationSchemas',ExaminationSchemas);
+const Examination = mongoose.model('ExaminationSchemas',ExaminationSchemas)
 
-module.exports = Examination;
+module.exports = Examination
